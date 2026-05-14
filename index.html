@@ -39,31 +39,142 @@
             z-index: -1;
         }
 
+        /* --- INTERACTIVE MARILL --- */
         .marill-bg {
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 120px;
             height: auto;
-            z-index: -1;
+            z-index: 1000;
             filter: drop-shadow(5px 5px 0px var(--pixel-black));
-            animation: marill-bounce 4s ease-in-out infinite;
+            cursor: pointer;
             image-rendering: pixelated;
+            transition: transform 0.1s;
         }
 
-        @keyframes marill-bounce {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-30px) rotate(5deg); }
+        .marill-jump {
+            animation: marill-jump-anim 0.4s ease-out !important;
+        }
+
+        @keyframes marill-jump-anim {
+            0% { transform: scale(1.2, 0.8) translateY(0); }
+            50% { transform: scale(0.9, 1.1) translateY(-40px); }
+            100% { transform: scale(1, 1) translateY(0); }
+        }
+
+        .marill-bubble {
+            position: fixed;
+            bottom: 140px;
+            right: 50px;
+            background: white;
+            border: 3px solid var(--pixel-black);
+            padding: 5px 15px;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1001;
+            box-shadow: 4px 4px 0 var(--pixel-black);
+            animation: pop-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .marill-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            right: 20px;
+            border-width: 12px 12px 0 0;
+            border-style: solid;
+            border-color: var(--pixel-black) transparent;
+        }
+
+        /* --- HOLOGRAPHIC POKEMON CARDS --- */
+        .card-container {
+            position: absolute;
+            width: 260px;
+            height: 360px;
+            perspective: 1000px;
+            z-index: 5000;
+            cursor: grab;
+            animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-container:active { cursor: grabbing; }
+
+        .pokemon-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            background-size: cover;
+            background-position: center;
+            border: 5px solid #f0e2b6;
+            outline: 4px solid var(--pixel-black);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        /* Intense Rainbow Foil Layer */
+        .pokemon-card::before {
+            content: "";
+            position: absolute;
+            inset: -100%;
+            z-index: 2;
+            background: linear-gradient(
+                115deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 45%,
+                rgba(255, 255, 255, 0.9) 50%,
+                rgba(255, 255, 255, 0.7) 55%,
+                rgba(255, 255, 255, 0) 70%,
+                transparent 100%
+            );
+            transform: translate(var(--foil-x, 0%), var(--foil-y, 0%));
+            mix-blend-mode: overlay;
+            pointer-events: none;
+        }
+
+        /* Glitter & Rainbow Color Layer */
+        .pokemon-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            background-image: 
+                url('https://raw.githubusercontent.com/simeydotme/pokemon-cards-css/main/public/img/glitter.png'),
+                linear-gradient(125deg, 
+                    #ff000050 0%, #ff800050 10%, #ffff0050 20%, #00ff0050 30%, 
+                    #00ffff50 40%, #0000ff50 50%, #8000ff50 60%, #ff00ff50 70%, #ff000050 80%);
+            background-size: 160px, 400% 400%;
+            background-position: center, var(--bg-x, 50%) var(--bg-y, 50%);
+            mix-blend-mode: color-dodge;
+            opacity: var(--sparkle, 0.3);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- ABILITY VFX PARTICLES --- */
+        .vfx-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 6000;
+            font-size: 24px;
+            animation: vfx-float 1s ease-out forwards;
+        }
+
+        @keyframes vfx-float {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--vx), var(--vy)) scale(0) rotate(360deg); opacity: 0; }
         }
 
         /* --- WINDOWS --- */
         .desktop {
             position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
             transform-style: preserve-3d;
         }
 
@@ -131,29 +242,14 @@
             box-shadow: 8px 8px 0 var(--pixel-black);
         }
 
-        /* --- ANIMATED PROGRESS BAR --- */
         .progress-bar {
             border: 4px solid var(--pixel-black);
-            height: 30px;
-            background: #eee;
-            width: 100%;
-            overflow: hidden;
-            position: relative;
+            height: 30px; background: #eee; width: 100%;
+            overflow: hidden; position: relative;
         }
         .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--heart-red);
-            background-image: linear-gradient(
-                45deg, 
-                rgba(255,255,255,0.2) 25%, 
-                transparent 25%, 
-                transparent 50%, 
-                rgba(255,255,255,0.2) 50%, 
-                rgba(255,255,255,0.2) 75%, 
-                transparent 75%, 
-                transparent
-            );
+            height: 100%; width: 0%; background: var(--heart-red);
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent);
             background-size: 30px 30px;
             animation: fill-and-slide 4s linear infinite;
         }
@@ -170,11 +266,10 @@
             box-shadow: 6px 6px 0px var(--pixel-black); cursor: pointer;
         }
 
-        /* --- POPUP --- */
         #message-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(4px);
-            z-index: 2000; justify-content: center; align-items: center;
+            z-index: 9000; justify-content: center; align-items: center;
         }
         .popup-window { width: 500px; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .message-text {
@@ -184,13 +279,9 @@
 
         @keyframes pop-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* --- HEART PARTICLES --- */
         .hover-heart {
-            position: fixed;
-            pointer-events: none;
-            color: var(--heart-red);
-            font-size: 24px;
-            z-index: 999;
+            position: fixed; pointer-events: none; color: var(--heart-red);
+            font-size: 24px; z-index: 9999;
             animation: heart-pop 0.8s ease-out forwards;
         }
 
@@ -204,18 +295,17 @@
 
     <div class="desktop-overlay"></div>
     
-    <!-- Marill floating in the background -->
-    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/183.gif" class="marill-bg" alt="Marill">
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/183.gif" 
+         class="marill-bg" id="marill-sprite" onclick="interactMarill()" alt="Marill">
 
     <div class="desktop">
-
         <div class="window-wrapper win-1">
             <div class="window" style="width: 320px;" onmouseover="burstHearts(this)">
                 <div class="title-bar">
                     <span>✧ iluuuu.exe</span>
                     <div class="controls">
                         <div class="control-btn btn-cyan">_</div>
-                        <div class="control-btn btn-pink">X</div>
+                        <div class="control-btn btn-pink" onclick="this.closest('.window-wrapper').remove()">X</div>
                     </div>
                 </div>
                 <div class="content"><div class="face" style="font-size: 5rem;">( •v• )</div></div>
@@ -229,7 +319,7 @@
                     <div class="controls">
                         <div class="control-btn btn-cyan">_</div>
                         <div class="control-btn btn-cyan">□</div>
-                        <div class="control-btn btn-pink">X</div>
+                        <div class="control-btn btn-pink" onclick="this.closest('.window-wrapper').remove()">X</div>
                     </div>
                 </div>
                 <div class="content">
@@ -246,7 +336,7 @@
                 <div class="title-bar">
                     <span>system_status</span>
                     <div class="controls">
-                        <div class="control-btn btn-pink">X</div>
+                        <div class="control-btn btn-pink" onclick="this.closest('.window-wrapper').remove()">X</div>
                     </div>
                 </div>
                 <div class="content">
@@ -281,44 +371,137 @@
         function showMessage() { document.getElementById('message-overlay').style.display = 'flex'; }
         function closeMessage() { document.getElementById('message-overlay').style.display = 'none'; }
 
-        // Heart Burst on Hover
+        const marillQuotes = ["Mewilu! ♪", "★ *wavy tail*", "wuv u?", "♥ !!", "( ^ ω ^ )"];
+        let glaceonSpawned = false;
+        let sylveonSpawned = false;
+
+        function interactMarill() {
+            const marill = document.getElementById('marill-sprite');
+            marill.classList.remove('marill-jump');
+            void marill.offsetWidth;
+            marill.classList.add('marill-jump');
+
+            const oldBubble = document.querySelector('.marill-bubble');
+            if (oldBubble) oldBubble.remove();
+            const bubble = document.createElement('div');
+            bubble.className = 'marill-bubble';
+            bubble.innerText = marillQuotes[Math.floor(Math.random() * marillQuotes.length)];
+            document.body.appendChild(bubble);
+
+            burstHearts(marill);
+
+            if (!glaceonSpawned) {
+                spawnPokeCard("https://images.pokemontcg.io/swsh7/209_hires.png", "70vw", "10vh", "ice");
+                glaceonSpawned = true;
+            } else if (!sylveonSpawned) {
+                spawnPokeCard("https://images.pokemontcg.io/swsh7/212_hires.png", "10vw", "55vh", "fairy");
+                sylveonSpawned = true;
+            }
+
+            setTimeout(() => {
+                bubble.style.opacity = '0';
+                bubble.style.transition = 'opacity 0.5s';
+                setTimeout(() => bubble.remove(), 500);
+            }, 1500);
+        }
+
+        function spawnPokeCard(imgSrc, x, y, type) {
+            const container = document.createElement('div');
+            container.className = 'card-container';
+            container.style.left = x; container.style.top = y;
+
+            const card = document.createElement('div');
+            card.className = 'pokemon-card';
+            card.style.backgroundImage = `url(${imgSrc})`;
+
+            container.appendChild(card);
+            document.body.appendChild(container);
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const rX = (mouseY - rect.height / 2) / -8;
+                const rY = (mouseX - rect.width / 2) / 8;
+                card.style.transform = `rotateX(${rX}deg) rotateY(${rY}deg)`;
+                
+                const px = (mouseX / rect.width) * 100 - 50; 
+                const py = (mouseY / rect.height) * 100 - 50;
+                card.style.setProperty('--foil-x', `${px}%`);
+                card.style.setProperty('--foil-y', `${py}%`);
+                card.style.setProperty('--bg-x', `${(mouseX / rect.width) * 100}%`);
+                card.style.setProperty('--bg-y', `${(mouseY / rect.height) * 100}%`);
+                card.style.setProperty('--sparkle', '0.8');
+
+                if (Math.random() > 0.8) spawnVFX(e.clientX, e.clientY, type);
+            });
+
+            container.addEventListener('mouseleave', () => {
+                card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                card.style.setProperty('--sparkle', '0.3');
+            });
+
+            makeDraggable(container);
+        }
+
+        function spawnVFX(x, y, type) {
+            const vfx = document.createElement('div');
+            vfx.className = 'vfx-particle';
+            const particles = type === "ice" ? ["❄️", "🧊", "✧", "💎"] : ["✨", "♥", "🌸", "🎀"];
+            vfx.innerHTML = particles[Math.floor(Math.random() * particles.length)];
+            vfx.style.left = x + 'px'; vfx.style.top = y + 'px';
+            const vx = (Math.random() - 0.5) * 250 + 'px';
+            const vy = (Math.random() - 0.5) * 250 + 'px';
+            vfx.style.setProperty('--vx', vx); vfx.style.setProperty('--vy', vy);
+            document.body.appendChild(vfx);
+            setTimeout(() => vfx.remove(), 1000);
+        }
+
+        function makeDraggable(el) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            el.onmousedown = (e) => {
+                const allCards = document.querySelectorAll('.card-container');
+                allCards.forEach(c => c.style.zIndex = "5000");
+                el.style.zIndex = "5001";
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
+                document.onmousemove = (e) => {
+                    pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX; pos4 = e.clientY;
+                    el.style.top = (el.offsetTop - pos2) + "px";
+                    el.style.left = (el.offsetLeft - pos1) + "px";
+                };
+            };
+        }
+
         function burstHearts(el) {
             const rect = el.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 10; i++) {
                 const h = document.createElement('div');
                 h.className = 'hover-heart';
                 h.innerHTML = '♥';
-                h.style.left = centerX + 'px';
-                h.style.top = centerY + 'px';
-                
-                // Random explosion direction
+                h.style.left = centerX + 'px'; h.style.top = centerY + 'px';
                 const tx = (Math.random() - 0.5) * 300 + 'px';
                 const ty = (Math.random() - 0.5) * 300 + 'px';
-                h.style.setProperty('--tx', tx);
-                h.style.setProperty('--ty', ty);
-
+                h.style.setProperty('--tx', tx); h.style.setProperty('--ty', ty);
                 document.body.appendChild(h);
                 setTimeout(() => h.remove(), 800);
             }
         }
 
-        // Mouse Trail Hearts (Subtle)
         let lastX = 0;
         function spawnHoverHeart(e) {
             if (Math.abs(e.pageX - lastX) < 50) return;
             lastX = e.pageX;
-            
             const h = document.createElement('div');
             h.className = 'hover-heart';
             h.innerHTML = '♥';
-            h.style.left = e.pageX + 'px';
-            h.style.top = e.pageY + 'px';
+            h.style.left = e.pageX + 'px'; h.style.top = e.pageY + 'px';
             h.style.fontSize = '12px';
-            h.style.setProperty('--tx', '0px');
-            h.style.setProperty('--ty', '-50px');
+            h.style.setProperty('--tx', '0px'); h.style.setProperty('--ty', '-50px');
             document.body.appendChild(h);
             setTimeout(() => h.remove(), 800);
         }
