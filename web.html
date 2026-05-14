@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Halftone Retro OS - Marill Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-top: #fbe4ed;
+            --bg-bottom: #e5d9f2;
+            --pink-dots: rgba(255, 133, 192, 0.4);
+            --window-pink: #ffbada;
+            --btn-cyan: #9ff4fd;
+            --pixel-black: #1a1a1a;
+            --grid-line: rgba(255, 255, 255, 0.6);
+            --heart-red: #ff4d6d;
+            --marill-blue: #a3daff;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            height: 100%;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            font-family: 'VT323', monospace;
+            overflow: hidden;
+            perspective: 2000px;
+        }
+
+        /* --- DECORATIONS --- */
+        .desktop-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+                radial-gradient(var(--pink-dots) 20%, transparent 20%);
+            background-size: 60px 60px, 60px 60px, 12px 12px;
+            z-index: -1;
+        }
+
+        .marill-bg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 120px;
+            height: auto;
+            z-index: -1;
+            filter: drop-shadow(5px 5px 0px var(--pixel-black));
+            animation: marill-bounce 4s ease-in-out infinite;
+            image-rendering: pixelated;
+        }
+
+        @keyframes marill-bounce {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        /* --- WINDOWS --- */
+        .desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        .window-wrapper {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: global-float 6s ease-in-out infinite;
+        }
+
+        .window {
+            background: #fff;
+            border: 4px solid var(--pixel-black);
+            box-shadow: 12px 12px 0px 0px var(--pixel-black);
+            transform: rotateX(10deg) rotateY(-10deg);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .window:hover {
+            transform: rotateX(0deg) rotateY(0deg) scale(1.05) translateZ(50px);
+            box-shadow: 20px 20px 0px 0px var(--pixel-black);
+            z-index: 100 !important;
+        }
+
+        .win-1 { top: 12%; left: 10%; animation-delay: 0s; }
+        .win-2 { top: 15%; right: 12%; animation-delay: -1.5s; } 
+        .win-3 { bottom: 12%; left: 35%; animation-delay: -3s; }
+
+        @keyframes global-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px); }
+        }
+
+        .title-bar {
+            background: var(--window-pink);
+            color: var(--pixel-black);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--pixel-black);
+            font-size: 1.6rem;
+            user-select: none;
+        }
+
+        .controls { display: flex; gap: 6px; align-items: center; }
+        .control-btn {
+            width: 22px; height: 22px;
+            border: 3px solid var(--pixel-black);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1rem; font-weight: bold; cursor: pointer;
+        }
+        .btn-cyan { background: var(--btn-cyan); }
+        .btn-pink { background: var(--heart-red); color: white; }
+
+        .content {
+            padding: 30px; text-align: center;
+            background-image: radial-gradient(rgba(0,0,0,0.03) 15%, transparent 15%);
+            background-size: 10px 10px;
+        }
+
+        .pixelated-photo {
+            display: block; margin: 15px auto;
+            max-height: 350px; max-width: 95%;
+            border: 4px solid var(--pixel-black);
+            box-shadow: 8px 8px 0 var(--pixel-black);
+        }
+
+        /* --- ANIMATED PROGRESS BAR --- */
+        .progress-bar {
+            border: 4px solid var(--pixel-black);
+            height: 30px;
+            background: #eee;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--heart-red);
+            background-image: linear-gradient(
+                45deg, 
+                rgba(255,255,255,0.2) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255,255,255,0.2) 50%, 
+                rgba(255,255,255,0.2) 75%, 
+                transparent 75%, 
+                transparent
+            );
+            background-size: 30px 30px;
+            animation: fill-and-slide 4s linear infinite;
+        }
+
+        @keyframes fill-and-slide {
+            0% { width: 0%; background-position: 0 0; }
+            80% { width: 100%; background-position: 120px 0; opacity: 1; }
+            100% { width: 100%; background-position: 150px 0; opacity: 0; }
+        }
+
+        .btn-replenish {
+            background: var(--btn-cyan); border: 4px solid var(--pixel-black);
+            padding: 12px 35px; font-family: 'VT323'; font-size: 2.2rem;
+            box-shadow: 6px 6px 0px var(--pixel-black); cursor: pointer;
+        }
+
+        /* --- POPUP --- */
+        #message-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(4px);
+            z-index: 2000; justify-content: center; align-items: center;
+        }
+        .popup-window { width: 500px; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .message-text {
+            font-family: 'VT323', monospace; font-size: 1.8rem; color: var(--pixel-black);
+            margin: 10px 0; text-align: justify; line-height: 1.1; padding: 0 10px;
+        }
+
+        @keyframes pop-in { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- HEART PARTICLES --- */
+        .hover-heart {
+            position: fixed;
+            pointer-events: none;
+            color: var(--heart-red);
+            font-size: 24px;
+            z-index: 999;
+            animation: heart-pop 0.8s ease-out forwards;
+        }
+
+        @keyframes heart-pop {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body onmousemove="spawnHoverHeart(event)">
+
+    <div class="desktop-overlay"></div>
+    
+    <!-- Marill floating in the background -->
+    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/183.gif" class="marill-bg" alt="Marill">
+
+    <div class="desktop">
+
+        <div class="window-wrapper win-1">
+            <div class="window" style="width: 320px;" onmouseover="burstHearts(this)">
+                <div class="title-bar">
+                    <span>✧ iluuuu.exe</span>
+                    <div class="controls">
+                        <div class="control-btn btn-cyan">_</div>
+                        <div class="control-btn btn-pink">X</div>
+                    </div>
+                </div>
+                <div class="content"><div class="face" style="font-size: 5rem;">( •v• )</div></div>
+            </div>
+        </div>
+
+        <div class="window-wrapper win-2">
+            <div class="window" style="width: 520px;" onmouseover="burstHearts(this)">
+                <div class="title-bar">
+                    <span>♥ portrait_portal</span>
+                    <div class="controls">
+                        <div class="control-btn btn-cyan">_</div>
+                        <div class="control-btn btn-cyan">□</div>
+                        <div class="control-btn btn-pink">X</div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="face" style="font-size: 2rem;">( •‿• )</div>
+                    <img src="ilu.png" alt="Portrait" class="pixelated-photo">
+                    <h1 style="font-size: 2.8rem; margin: 15px 0;">i wuuv you! ♥</h1>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="window-wrapper win-3">
+            <div class="window" style="width: 380px;" onmouseover="burstHearts(this)">
+                <div class="title-bar">
+                    <span>system_status</span>
+                    <div class="controls">
+                        <div class="control-btn btn-pink">X</div>
+                    </div>
+                </div>
+                <div class="content">
+                    <button class="btn-replenish" onclick="showMessage()">replenish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-overlay">
+        <div class="window popup-window">
+            <div class="title-bar">
+                <span>✧ system_recovery</span>
+                <div class="controls">
+                    <div class="control-btn btn-pink" onclick="closeMessage()">X</div>
+                </div>
+            </div>
+            <div class="content">
+                <p class="message-text">i'm sorry if the things i currently do aren't special 
+                or sweet enough to make you feel loved, this website sample 
+                was supposed to be a surprise as i wanted to make a portfolio 
+                of some sorts because i genuinely felt bad, i'm sorry 
+                for not being the person you ideally want me to be.
+                i'm always trying and thinking of ways to make it better.<br><br>
+                (◞‸◟；)</p>
+                <button class="btn-replenish" onclick="closeMessage()" style="font-size: 1.5rem; margin-top: 15px;">okay!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showMessage() { document.getElementById('message-overlay').style.display = 'flex'; }
+        function closeMessage() { document.getElementById('message-overlay').style.display = 'none'; }
+
+        // Heart Burst on Hover
+        function burstHearts(el) {
+            const rect = el.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            for (let i = 0; i < 8; i++) {
+                const h = document.createElement('div');
+                h.className = 'hover-heart';
+                h.innerHTML = '♥';
+                h.style.left = centerX + 'px';
+                h.style.top = centerY + 'px';
+                
+                // Random explosion direction
+                const tx = (Math.random() - 0.5) * 300 + 'px';
+                const ty = (Math.random() - 0.5) * 300 + 'px';
+                h.style.setProperty('--tx', tx);
+                h.style.setProperty('--ty', ty);
+
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 800);
+            }
+        }
+
+        // Mouse Trail Hearts (Subtle)
+        let lastX = 0;
+        function spawnHoverHeart(e) {
+            if (Math.abs(e.pageX - lastX) < 50) return;
+            lastX = e.pageX;
+            
+            const h = document.createElement('div');
+            h.className = 'hover-heart';
+            h.innerHTML = '♥';
+            h.style.left = e.pageX + 'px';
+            h.style.top = e.pageY + 'px';
+            h.style.fontSize = '12px';
+            h.style.setProperty('--tx', '0px');
+            h.style.setProperty('--ty', '-50px');
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 800);
+        }
+    </script>
+</body>
+</html>
